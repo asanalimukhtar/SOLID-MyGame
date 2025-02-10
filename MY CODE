@@ -1,0 +1,105 @@
+interface Damageable {
+    void takeDamage(int damage);
+}
+public class Player implements Damageable {
+    String name;
+    int health = 100;
+    int experience = 0;
+    Inventory inventory;
+
+    public Player(String name) {
+        this.name = name;
+        this.inventory = new Inventory();
+    }
+    public void takeDamage(int damage) {
+        health -= damage;
+        System.out.println(name + " damage: " + damage + ", health: " + health);
+    }
+    public void gainExperience(int exp) {
+        experience += exp;
+        System.out.println(name + " get experience: " + exp + ", full experience: " + experience);
+    }
+    public void pickUpItem(String item) {
+        inventory.addItem(item);
+    }
+}
+public class Enemy implements Damageable {
+    String type;
+    int health;
+    public Enemy(String type, int health) {
+        this.type = type;
+        this.health = health;
+    }
+    public void takeDamage(int damage) {
+        health -= damage;
+        System.out.println(type + " get damage: " + damage + ", health: " + health);
+    }
+    public String getType() {
+        return type;
+    }
+}
+public class CombatManager {
+    public static void attack(Damageable target, int damage) {
+        target.takeDamage(damage);
+    }
+}
+import java.util.ArrayList;
+import java.util.List;
+
+public class Inventory {
+    private List<String> items = new ArrayList<>();
+    public void addItem(String item) {
+        items.add(item);
+        System.out.println("You get item(maybe trash): " + item);
+    }
+}
+class ItemManager {
+    public void useItem(Player player, String item) {
+        System.out.println("Player use item;): " + item);
+    }
+}
+class LevelManager {
+    int level = 1;
+    public void levelUp() {
+        level++;
+        System.out.println("New level congrats! " + level);
+    }
+}
+class ScoreManager {
+    int score = 0;
+    public void addScore(int points) {
+        score += points;
+        System.out.println("Great job! Your score: " + score);
+    }
+}
+import java.util.Scanner;
+
+public class Game {
+    public static void main(String[] args) {
+        Scanner game = new Scanner(System.in);
+        Player player = new Player("Hero");
+        Enemy enemy = new Enemy("Goblin", 30);
+        EnemyManager enemyManager = new EnemyManager();
+        enemyManager.addEnemy(enemy);
+
+        ItemManager itemManager = new ItemManager();
+        LevelManager levelManager = new LevelManager();
+        ScoreManager scoreManager = new ScoreManager();
+
+        player.pickUpItem("sword");
+        itemManager.useItem(player, "sword");
+
+        System.out.print(" player Damage: ");
+        int playerDamage = game.nextInt();
+        CombatManager.attack(enemy, playerDamage);
+        player.gainExperience(10);
+
+        levelManager.levelUp();
+        scoreManager.addScore(50);
+
+        System.out.print("Goblin damage: ");
+        int enemyDamage = game.nextInt();
+        enemyManager.attackPlayer(player, enemy, enemyDamage);
+
+    }
+}
